@@ -2,6 +2,8 @@ import pathlib
 
 
 def cred_locater(file_path, domain_name):
+#Input: Path for the 'password' txt file from the original bot & The domain name from which the credentials were harvested. 
+#Output: New TXT file that contains only the credentials relevnt for the client.
 
     file = open(file_path, "r")
     rfile = file.read()
