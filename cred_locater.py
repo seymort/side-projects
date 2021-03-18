@@ -1,10 +1,8 @@
 import pathlib
+import argparse
 
 
 def cred_locater(file_path, domain_name):
-#Input: Path for the 'password' txt file from the original bot & The domain name from which the credentials were harvested. 
-#Output: New TXT file that contains only the credentials relevnt for the client.
-
     file = open(file_path, "r")
     rfile = file.read()
     block = []
@@ -14,7 +12,7 @@ def cred_locater(file_path, domain_name):
                 print(i)
                 block.append(i)
         client = input("Enter Client name: ")
-        alert = str(input("Enter Alert ID"))
+        alert = str(input("Enter Alert ID: "))
         write_path = client + alert + ".txt"
         wfile = open(pathlib.Path().absolute() / write_path, "w")
         # write the credentials to the file
@@ -24,3 +22,12 @@ def cred_locater(file_path, domain_name):
     else:
         print("False")
 
+
+# CLI USAGE:
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument("file_path", help="put the txt file path")
+parser.add_argument("domain_name", help="put the domain name")
+args = parser.parse_args()
+cred_locater(args.file_path, args.domain_name)
