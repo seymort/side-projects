@@ -1,7 +1,9 @@
 import pathlib
 import argparse
 import zipfile
-
+import tempfile
+import subprocess
+import os
 
 def validate_user_input(usr_input):
     if usr_input == '':
@@ -20,24 +22,30 @@ def validate_path_existence(path):
     else:
         return path
 
-
 def cred_locater(zip_path, domain_name, client_name, alert_id):
-    file = open(zip_path, "r")
-    rfile = file.read()
-    block = []
-    if domain_name in rfile:
-        for i in rfile.split("\n" * 2):
-            if domain_name in i:
-                print(i)
-                block.append(i)
-        write_path = client_name + alert_id + ".txt"
-        wfile = open(pathlib.Path().absolute() / write_path, "w")
-        # write the credentials to the file
-        for z in block:
-            wfile.write(z)
 
-    else:
-        print("False")
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        zf = zipfile.ZipFile(zip_path)
+        zf.extractall(tmpdirname)
+        for files in os.listdir(tmpdirname):
+            if files == "passwords.txt" or files == "Passwords.txt":
+                file = open(tmpdirname + r"\%s" % files, "r")
+                rfile = file.read()
+                block = []
+                if domain_name in rfile:
+                    for i in rfile.split("\n" * 2):
+                        if domain_name in i:
+                            print(i)
+                            block.append(i)
+                file.close()
+
+            write_path = client_name + alert_id + ".txt"
+            wfile = open(pathlib.Path().absolute() / write_path, "w")
+            # write the credentials to the file
+            for z in block:
+                wfile.write(z)
+            wfile.close()
+            os.system("start " + write_path)
 
 
 # CLI USAGE:
