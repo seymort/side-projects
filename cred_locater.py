@@ -1,9 +1,28 @@
 import pathlib
 import argparse
+import zipfile
 
 
-def cred_locater(file_path, domain_name):
-    file = open(file_path, "r")
+def validate_user_input(usr_input):
+    if usr_input == '':
+        while usr_input == '':
+            usr_input = input('Invalid input.\nPlease fill the necessary fields: ')
+        return usr_input
+    else:
+        return usr_input
+
+
+def validate_path_existence(path):
+    if not zipfile.is_zipfile(path):
+        while not zipfile.is_zipfile(path):
+            path = input('Invalid path.\nPlease enter path: ')
+        return path
+    else:
+        return path
+
+
+def cred_locater(zip_path, domain_name, client_name, alert_id):
+    file = open(zip_path, "r")
     rfile = file.read()
     block = []
     if domain_name in rfile:
@@ -11,9 +30,7 @@ def cred_locater(file_path, domain_name):
             if domain_name in i:
                 print(i)
                 block.append(i)
-        client = input("Enter Client name: ")
-        alert = str(input("Enter Alert ID: "))
-        write_path = client + alert + ".txt"
+        write_path = client_name + alert_id + ".txt"
         wfile = open(pathlib.Path().absolute() / write_path, "w")
         # write the credentials to the file
         for z in block:
@@ -24,10 +41,20 @@ def cred_locater(file_path, domain_name):
 
 
 # CLI USAGE:
+if __name__ == '__main__':
 
-parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser()
 
-parser.add_argument("file_path", help="put the txt file path")
-parser.add_argument("domain_name", help="put the domain name")
-args = parser.parse_args()
-cred_locater(args.file_path, args.domain_name)
+    parser.add_argument("zip_path", help="put the zip file path")
+    parser.add_argument("domain_name", help="put the domain name")
+    args = parser.parse_args()
+
+    client = input("Enter Client name: ")
+    client = validate_user_input(client)
+    alert = str(input("Enter Alert ID: "))
+    alert = validate_user_input(alert)
+
+    domain_name = validate_user_input(args.domain_name)
+    zip_path = validate_path_existence(args.zip_path)
+
+    cred_locater(zip_path, domain_name, client, alert)
