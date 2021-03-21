@@ -25,19 +25,22 @@ def validate_path_existence(path):
 def cred_locater(zip_path, domain_name, client_name, alert_id):
 
     with tempfile.TemporaryDirectory() as tmpdirname:
+        block = []
         zf = zipfile.ZipFile(zip_path)
         zf.extractall(tmpdirname)
         for files in os.listdir(tmpdirname):
             if files == "passwords.txt" or files == "Passwords.txt":
                 file = open(tmpdirname + r"\%s" % files, "r")
                 rfile = file.read()
-                block = []
+                print(tmpdirname + r"\%s" % files)
                 if domain_name in rfile:
                     for i in rfile.split("\n" * 2):
                         if domain_name in i:
                             print(i)
-                            block.append(i)
+                            block.append(i + '\n' * 2)
                 file.close()
+            else:
+                print("File not found")
 
             write_path = client_name + alert_id + ".txt"
             wfile = open(pathlib.Path().absolute() / write_path, "w")
@@ -46,7 +49,6 @@ def cred_locater(zip_path, domain_name, client_name, alert_id):
                 wfile.write(z)
             wfile.close()
             os.system("start " + write_path)
-
 
 # CLI USAGE:
 if __name__ == '__main__':
