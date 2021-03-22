@@ -4,6 +4,7 @@ import zipfile
 import tempfile
 import subprocess
 import os
+from gooey import Gooey, GooeyParser
 
 def validate_user_input(usr_input):
     if usr_input == '':
@@ -51,21 +52,27 @@ def cred_locater(zip_path, domain_name, client_name, alert_id):
         wfile.close()
         os.system("start " + write_path)
 
-# CLI USAGE:
-if __name__ == '__main__':
 
+
+
+@Gooey()
+def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument("zip_path", help="put the zip file path")
     parser.add_argument("domain_name", help="put the domain name")
+    parser.add_argument("client", help="Enter Client name")
+    parser.add_argument("alert", help="Enter Alert ID")
     args = parser.parse_args()
 
-    client = input("Enter Client name: ")
-    client = validate_user_input(client)
-    alert = str(input("Enter Alert ID: "))
-    alert = validate_user_input(alert)
 
     domain_name = validate_user_input(args.domain_name)
     zip_path = validate_path_existence(args.zip_path)
+    client = args.client
+    alert = args.alert
 
     cred_locater(zip_path, domain_name, client, alert)
+
+if __name__ == '__main__':
+    main()
+
