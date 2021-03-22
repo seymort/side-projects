@@ -29,26 +29,27 @@ def cred_locater(zip_path, domain_name, client_name, alert_id):
         zf = zipfile.ZipFile(zip_path)
         zf.extractall(tmpdirname)
         for files in os.listdir(tmpdirname):
-            if files == "passwords.txt" or files == "Passwords.txt":
+            if files == "passwords.txt" or files == "Passwords.txt" or files == "PasswordsList.txt":
                 file = open(tmpdirname + r"\%s" % files, "r")
                 rfile = file.read()
-                print(tmpdirname + r"\%s" % files)
                 if domain_name in rfile:
                     for i in rfile.split("\n" * 2):
                         if domain_name in i:
                             print(i)
                             block.append(i + '\n' * 2)
                 file.close()
+                break
             else:
                 print("File not found")
+            
 
-            write_path = client_name + alert_id + ".txt"
-            wfile = open(pathlib.Path().absolute() / write_path, "w")
+        write_path = client_name + alert_id + ".txt"
+        wfile = open(pathlib.Path().absolute() / write_path, "w")
             # write the credentials to the file
-            for z in block:
-                wfile.write(z)
-            wfile.close()
-            os.system("start " + write_path)
+        for z in block:
+            wfile.write(z)
+        wfile.close()
+        os.system("start " + write_path)
 
 # CLI USAGE:
 if __name__ == '__main__':
