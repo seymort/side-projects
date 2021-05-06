@@ -25,12 +25,14 @@ def validate_path_existence(path):
 
 def cred_locater(zip_path, domain_name, client_name, alert_id):
 
+    file_exists = False
     with tempfile.TemporaryDirectory() as tmpdirname:
         block = []
         zf = zipfile.ZipFile(zip_path)
         zf.extractall(tmpdirname)
         for files in os.listdir(tmpdirname):
             if files == "passwords.txt" or files == "Passwords.txt" or files == "PasswordsList.txt":
+                file_exists = True
                 file = open(tmpdirname + r"\%s" % files, "r")
                 rfile = file.read()
                 if domain_name in rfile:
@@ -40,9 +42,10 @@ def cred_locater(zip_path, domain_name, client_name, alert_id):
                             block.append(i + '\n' * 2)
                 file.close()
                 break
-            else:
-                print("File not found")
-            
+
+        if file_exists == False:
+            print("Did not find password file in the ZIP folder, please check the ZIP manually")
+            return "Did not find password file in the ZIP folder, please check the ZIP manually"
 
         write_path = client_name + alert_id + ".txt"
         wfile = open(pathlib.Path().absolute() / write_path, "w")
@@ -57,9 +60,9 @@ def cred_locater(zip_path, domain_name, client_name, alert_id):
 
 @Gooey()
 def main():
-    parser = argparse.ArgumentParser()
+    parser = GooeyParser(description="A Tool That Was Created Specially For the Tier1 Team To Locate Stolen Credentials in Zip Files")
 
-    parser.add_argument("zip_path", help="put the zip file path")
+    parser.add_argument("zip_path", help="put the zip file path", widget= 'FileChooser')
     parser.add_argument("domain_name", help="put the domain name")
     parser.add_argument("client", help="Enter Client name")
     parser.add_argument("alert", help="Enter Alert ID")
